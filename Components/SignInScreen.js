@@ -5,6 +5,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import * as Animatable from 'react-native-animatable';
 
+import { AuthContext } from "./Context";
 
 const SignInScreen = (props) =>{
     const[data, setData] = useState({
@@ -12,7 +13,10 @@ const SignInScreen = (props) =>{
         password:' ',
         check_textInputChange: false,
         secureTextEntry: true
-    })
+    });
+
+    const {signIn} = React.useContext(AuthContext);
+
     const textInputChange=(val)=>{
         if(val.length != 0)
         {
@@ -117,9 +121,11 @@ const SignInScreen = (props) =>{
             }
             </TouchableOpacity>
            </View>
-           
+           <TouchableOpacity>
+           <Text style={{marginTop:10}}>Forgot Password?</Text>
+           </TouchableOpacity>
            <TouchableOpacity
-           onPress={() => props.navigation.navigate('user')}
+           onPress={() => {signIn()}}
            style={
                [styles.signIn,{
                    borderColor:"blue",

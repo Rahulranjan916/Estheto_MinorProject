@@ -1,67 +1,61 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import Icon from 'react-native-vector-icons/Ionicons'
 
-import Front_page from './Screens/Front_page';
-import SignInScreen from './Screens/SignInScreen';
-import SignUpScreen from './Screens/SIgnUpScreen';
-import Connection from './Screens/Connection';
-import Animation from './Screens/Animation';
+import { AuthContext } from './Components/Context';
 
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const Stack = createStackNavigator();
-const drawer = createDrawerNavigator();
+import stack from './routes/StackNavigator';
+import Profile from './Screens/Profile';
 
-const stack = ({ navigation }) =>(
-  <Stack.Navigator screenOptions={{
-    headerStyle :{
-      backgroundColor:'#fa8072'
-    },
-    headerTintColor:{
-     fontWeight:'bold'
-    }
-  }}>
-
-    <Stack.Screen name="Front_page" component={Front_page} options={{
-      title:'Home', alignItems:'centre',justifyContent:'centre'
-    }}/>
-
-    <Stack.Screen name="SignIn" component={SignInScreen} options={{
-      title:'SignIn', alignItems:'centre',justifyContent:'centre'
-    }}/>
-
-    <Stack.Screen name="newUser" component={SignUpScreen} options={{
-      title:'SignUp', alignItems:'centre',justifyContent:'centre'
-    }}/>
-
-    <Stack.Screen name="user" component={Connection} options={{
-      title :'User',
-    }}/>
-
-    <Stack.Screen name="Animation" component={Animation} options={{
-      title:'Animated', alignItems:'centre',justifyContent:'centre'
-    }}
-    />
-  </Stack.Navigator>
-
-);
-
-
-
+import RootStackScreen from './routes/RouteStackScreen';
+import ProfileStackScreen from './routes/ProfileStack';
+import TabNavigatorScreen from './routes/TabNavigator';
+import MainStackScreen from './routes/MainNavigator';
 
 export default function App() {
+  const [isLoading, setIsLoading] = React.useState(true);
+  const[userToken, setUserToken] = React.useState(null);
+  const authContext = React.useMemo(()=>({
+    signIn:()=>{
+      setUserToken('fgkj');
+      setIsLoading(false);
+    },
+    signOut:()=>{
+      setUserToken(null);
+      setIsLoading(false);
+    },
+    signUp:()=>{
+      setUserToken('fgk');
+      setIsLoading(false);
+    },
+  }))
+  
+  useEffect(()=>{
+    setTimeout(()=>{
+      setIsLoading(false);
+    },1000);
+  },[]);
+
+  if(isLoading){
+    <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+      <ActivityIndicator size="large"/>
+    </View>
+  }
   return (
-       <NavigationContainer>
-            <drawer.Navigator initialRouteName="Front_page" >
-              <drawer.Screen name='Home' component={stack} />
-              <drawer.Screen name='SignOut' component={SignInScreen}/>
-            </drawer.Navigator>
+    <AuthContext.Provider value={authContext}>
+       <NavigationContainer >
+       {userToken != null ? (
+         <TabNavigatorScreen></TabNavigatorScreen>
+       )
+       :
+       <RootStackScreen/> 
+       }  
        </NavigationContainer>
-  );
-}
+       </AuthContext.Provider>
+  )};
 
 const styles = StyleSheet.create({
   container: {
